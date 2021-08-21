@@ -1,75 +1,98 @@
 # Goonvif
-Простое управление IP-устройствами, включая камерами. Goonvif - это реализация протокола ONVIF для управления IP-устройствами. Целью создания данной библиотеки является удобное и легкое управление IP-камерами и другими устройствами, поддерживающими стандарт ONVIF.
 
-## Установка
-Для установки библиотеки необходимо воспользоваться утилитой go get:
+轻松管理 IP 设备，包括摄像机。Goonvif 是用于管理 IP 设备的 ONVIF 协议的实现。该库的目的是方便、轻松地管理支持 ONVIF 标准的 IP 摄像机和其他设备。
+
+## 安装
+
+要安装库，您需要使用 go get 实用程序：
+
 ```
-go get github.com/yakovlevdmv/goonvif
+go get -u github.com/hepeichun/goonvif
 ```
-## Поддерживаемые сервисы
-Следующие сервисы полностью реализованы:
-- Device
-- Media
-- PTZ
-- Imaging
 
-## Использование
+## 支持的服务
 
-### Общая концепция
-1) Подключение к устройству
-2) Аутентификация (если необходима)
-3) Определение типов данных
-4) Выполнение необходимого метода
+以下服务已全面实施：
 
-#### Подключение к устройству
-Если в сети находится устройство по адресу *192.168.13.42*, а ее ONVIF сервисы используют порт *1234*, тогда подключиться к устройству можно следующим способом:
+* 设备
+* 媒体
+* 云台
+* 成像
+
+## 用法
+
+### 一般概念
+
+1. 连接到设备
+2. 身份验证（如果需要）
+3. 定义数据类型
+4. 执行所需的方法
+
+#### 连接到设备
+
+如果 192.168.13.42 网络上有设备，并且其 ONVIF 服务使用端口 1234 ，那么您可以通过以下方式连接到该设备：
+
 ```
 dev, err := goonvif.NewDevice("192.168.13.42:1234")
 ```
 
-*ONVIF порт может отличаться в зависимости от устройства и, чтобы узнать, какой порт использовать, можно зайти в веб-интерфейс устройства. **Обычно это 80 порт.***
+_ONVIF 端口可能因设备而异，要了解要使用的端口，您可以转到设备的 Web 界面。 **这通常是端口 80** 。
 
-#### Аутентификация
-Если какая-либо функция одного из сервисов ONVIF требует аутентификацию, необходимо использовать метод `Authenticate`.
+#### 验证
+
+如果 ONVIF 服务之一的任何功能需要身份验证，则必须使用该方法`Authenticate`。
+
 ```
 device := onvif.NewDevice("192.168.13.42:1234")
 device.Authenticate("username", "password")
+
 ```
 
-#### Определение типов данных
-Каждому сервису ONVIF в этой библиотеке соответствует свой пакет, в котором определены все типы данных этого сервиса, причем название пакета идентично названию сервиса и начинается с заглавной буквы.
-В Goonvif определены структуры для каждой функции каждого поддерживаемого этой библиотекой сервиса ONVIF.
-Определим тип данных функции `GetCapabilities` сервиса `Device`. Это делается следующим образом:
+#### 定义数据类型
+
+该库中的每个ONVIF服务都有自己的包，其中定义了该服务的所有数据类型，包名与服务名称相同，以大写字母开头。
+Goonvif 为该库支持的每个 ONVIF 服务的每个功能定义了结构。让我们定义`GetCapabilities`服务函数的数据类型`Device`。
+这是按如下方式完成的：
+
 ```
 capabilities := Device.GetCapabilities{Category:"All"}
+
 ```
-Почему у структуры GetCapabilities поле Category и почему значение этого поля All?
 
-На рисунке ниже показана документация функции [GetCapabilities](https://www.onvif.org/ver10/device/wsdl/devicemgmt.wsdl). Видно, что функция принимает один пареметр Category и его значение должно быть одно из следующих:  `'All', 'Analytics', 'Device', 'Events', 'Imaging', 'Media' или 'PTZ'`. 
+为什么 GetCapabilities 结构有一个 Category 字段，为什么这个字段有 All？
 
-![Device GetCapabilities](img/exmp_GetCapabilities.png)
+下图显示了 [GetCapabilities](https://www.onvif.org/ver10/device/wsdl/devicemgmt.wsdl) 函数的文档。可以看出，该函数采用了一个参数 Category，其值必须是以下之一： `'All', 'Analytics', 'Device', 'Events', 'Imaging', 'Media' или 'PTZ'`.
 
-Пример определения типа данных функции GetServiceCapabilities сервиса [PTZ](https://www.onvif.org/ver20/ptz/wsdl/ptz.wsdl):
+![设备获取能力](img/exmp_GetCapabilities.png)
+
+定义 [云台](https://www.onvif.org/ver20/ptz/wsdl/ptz.wsdl) 服务的 GetServiceCapabilities 函数的数据类型的示例：
+
 ```
 ptzCapabilities := PTZ.GetServiceCapabilities{}
+
 ```
-На рисунке ниже видно, что GetServiceCapabilities не принимает никаких аргументов. 
 
-![PTZ GetServiceCapabilities](img/GetServiceCapabilities.png)
+在下图中，您可以看到 GetServiceCapabilities 不带任何参数。
 
-*Общие типы данных находятся в пакете xsd/onvif. Типы данных (структуры), которые могут быть общими для всех сервисов определены в пакете onvif.*
+![PTZ 获取服务能力](img/GetServiceCapabilities.png)
 
-Пример оределения типа данных функции CreateUsers сервиса [Device](https://www.onvif.org/ver10/device/wsdl/devicemgmt.wsdl):
+_常见的数据类型在 xsd / onvif 包中。所有服务通用的数据类型（结构）在 onvif 包中定义。_
+
+定义 [Device](https://www.onvif.org/ver10/device/wsdl/devicemgmt.wsdl) 服务的 CreateUsers 函数的数据类型的示例：
+
 ```
 createUsers := Device.CreateUsers{User: onvif.User{Username:"admin", Password:"qwerty", UserLevel:"User"}}
+
 ```
 
-По рисунку ниже видно, что в данном примере полем структуры CreateUsers должен быть User, типом данных которого является структура User, содержащая поля Username, Password, UserLevel и необязательный Extension. Структура User находится в пакете onvif.
+下图显示，在本例中，CreateUsers结构体的字段必须是User，其数据类型为User结构体，包含Username、Password、UserLevel字段和一个可选的Extension。User 结构在 onvif 包中。
 
-![Device CreateUsers](img/exmp_CreateUsers.png)
+![设备创建用户](img/exmp_CreateUsers.png)
 
-#### Выполнение необходимого метода
-Для выполнения какой-либо функции одного из сервисов ONVIF, структура которой была определена, необходимо использовать `CallMethod` объекта device.
+#### 执行所需的方法
+
+要执行已构建的 ONVIF 服务之一的任何功能，您必须使用`CallMethod`设备对象。
+
 ```
 createUsers := Device.CreateUsers{User: onvif.User{Username:"admin", Password:"qwerty", UserLevel:"User"}}
 device := onvif.NewDevice("192.168.13.42:1234")
