@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/yakovlevdmv/goonvif"
+	"github.com/hepeichun/goonvif"
 	"net/http"
 	"io/ioutil"
-	"github.com/yakovlevdmv/goonvif/Device"
-	"github.com/yakovlevdmv/goonvif/xsd/onvif"
+	"github.com/hepeichun/goonvif/Device"
+	"github.com/hepeichun/goonvif/xsd/onvif"
 	"fmt"
 	"log"
 	"github.com/yakovlevdmv/gosoap"

@@ -1,7 +1,7 @@
 package Event
 
 import (
-	"github.com/yakovlevdmv/goonvif/xsd"
+	"github.com/hepeichun/goonvif/xsd"
 )
 
 type FilterType xsd.String
